@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Тимофей Пономарев](https://up.htmlacademy.ru/javascript/16/user/903857).
-* Наставник: `Неизвестно`.
+* Наставник: [Михаил Новиков](https://htmlacademy.ru/profile/id793985).
 
 ---
 
