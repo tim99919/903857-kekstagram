@@ -28,10 +28,10 @@ var getRandElement = function (arr) {
   return arr[getRandInt(0, arr.length - 1)];
 };
 
-var getComments = function (amount) {
+var getComments = function (count) {
   var comments = [];
 
-  for (var i = 0; i < amount; i++) {
+  for (var i = 0; i < count; i++) {
     comments.push(getRandElement(COMMENTS));
   }
 
@@ -54,6 +54,8 @@ var getPhotos = function () {
   return photos;
 };
 
+var photoCards = getPhotos();
+
 var renderPhotoCard = function (photo) {
   var pictureElement = pictureTemplate.cloneNode(true);
   pictureElement.querySelector('img').setAttribute('src', photo.url);
@@ -62,8 +64,6 @@ var renderPhotoCard = function (photo) {
 
   return pictureElement;
 };
-
-var photoCards = getPhotos();
 
 var showPhotoCards = function () {
   var fragment = document.createDocumentFragment();
