@@ -18,6 +18,7 @@ var DESCRIPTIONS = [
 ];
 
 var picturesElement = document.querySelector('.pictures');
+var socialComments = document.querySelector('.social__comments');
 var pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
 var getRandInt = function (min, max) {
@@ -56,11 +57,11 @@ var getPhotos = function () {
 
 var photoCards = getPhotos();
 
-var renderPhotoCard = function (photo) {
+var renderPhotoCard = function (picture) {
   var pictureElement = pictureTemplate.cloneNode(true);
-  pictureElement.querySelector('img').setAttribute('src', photo.url);
-  pictureElement.querySelector('.picture__likes').textContent = photo.likes;
-  pictureElement.querySelector('.picture__comments').textContent = photo.comments.length;
+  pictureElement.querySelector('img').setAttribute('src', picture.url);
+  pictureElement.querySelector('.picture__likes').textContent = picture.likes;
+  pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
 
   return pictureElement;
 };
@@ -75,23 +76,16 @@ var showPhotoCards = function () {
   picturesElement.appendChild(fragment);
 };
 
-var setSocialAvatar = function (element) {
-  element.className = 'social__picture';
-  element.setAttribute('alt', 'Аватар комментатора фотографии');
-  element.setAttribute('src', 'img/avatar-' + getRandInt(1, 6) + '.svg');
-  element.setAttribute('width', 35);
-  element.setAttribute('heigth', 35);
+var setSocialAvatar = function (avatar) {
+  avatar.setAttribute('src', 'img/avatar-' + getRandInt(1, 6) + '.svg');
 };
 
-var setSocialText = function (element, content) {
-  element.className = 'social__text';
-  element.textContent = content;
+var setSocialText = function (comment, content) {
+  comment.textContent = content;
 };
 
 var renderComment = function (picture, i) {
-  var newComment = document.createElement('li');
-  newComment.className = 'social__comment';
-  newComment.innerHTML = '<img><p></p>';
+  var newComment = document.querySelector('.social__comment').cloneNode(true);
   setSocialAvatar(newComment.querySelector('img'));
   setSocialText(newComment.querySelector('p'), picture.comments[i]);
 
@@ -99,14 +93,13 @@ var renderComment = function (picture, i) {
 };
 
 var showComments = function (picture) {
-  var socialComments = document.querySelector('.social__comments');
-  socialComments.innerHTML = '';
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < picture.comments.length; i++) {
     fragment.appendChild(renderComment(picture, i));
   }
 
+  socialComments.innerHTML = '';
   socialComments.appendChild(fragment);
 };
 
