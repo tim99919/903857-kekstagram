@@ -85,7 +85,7 @@ var setSocialText = function (comment, content) {
 };
 
 var renderComment = function (picture, i) {
-  var newComment = document.querySelector('.social__comment').cloneNode(true);
+  var newComment = socialComments.querySelector('.social__comment').cloneNode(true);
   setSocialAvatar(newComment.querySelector('img'));
   setSocialText(newComment.querySelector('p'), picture.comments[i]);
 
