@@ -1,5 +1,8 @@
 'use strict';
 
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
 var COMMENTS = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -20,6 +23,21 @@ var DESCRIPTIONS = [
 var picturesElement = document.querySelector('.pictures');
 var socialComments = document.querySelector('.social__comments');
 var pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
+var imgUploadSection = document.querySelector('.img-upload');
+var imgUploadInput = imgUploadSection.querySelector('#upload-file');
+// var buttonImgUpload = imgUpload.querySelector('.img-upload__control');
+var imgUploadDialog = imgUploadSection.querySelector('.img-upload__overlay');
+var imgUploadCancel = imgUploadSection.querySelector('.cancel');
+var effectLevel = imgUploadDialog.querySelector('.effect-level');
+var effectLevelLine = imgUploadDialog.querySelector('.effect-level__line');
+var effectLevelLineValue = imgUploadDialog.querySelector('.effect-level__value');
+var effectLevelLinePin = effectLevelLine.querySelector('.effect-level__pin');
+var effectLevelLineDepth = effectLevelLine.querySelector('.effect-level__depth');
+var effectItems = imgUploadDialog.querySelectorAll('li');
+var effectInputs = imgUploadDialog.querySelectorAll('li > input');
+var effectsPreviews = imgUploadDialog.querySelectorAll('.effects__preview');
+var effectNone = effectInputs[0];
+var uploadPhoto = imgUploadDialog.querySelector('img');
 
 var getRandInt = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -128,5 +146,92 @@ var hideCommentsStat = function () {
 };
 
 showPhotoCards();
-showBigPictureDiaolog(photoCards[0]);
+// showBigPictureDiaolog(photoCards[0]);
 hideCommentsStat();
+
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    evt.preventDefault();
+    closeImgUploadDialog();
+  }
+};
+
+var onImgUploadCancelClick = function () {
+  closeImgUploadDialog();
+};
+
+var onImgUploadCancelEnterPress = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closeImgUploadDialog();
+  }
+};
+
+var onLevelLinePinMouseup = function () {
+  // Здесь я так понимаю в дальнейшем нужно будет обработать перемещение пина
+  // Пока неясно как это делается
+  var value = Math.floor(effectLevelLinePin.offsetLeft / effectLevelLine.offsetWidth * 100);
+  setEffectLevel(value);
+};
+
+var openImgUploadDialog = function () {
+  imgUploadDialog.classList.remove('hidden');
+  document.addEventListener('keydown', onPopupEscPress);
+  imgUploadCancel.addEventListener('click', onImgUploadCancelClick);
+  imgUploadCancel.addEventListener('keydown', onImgUploadCancelEnterPress);
+
+  for (var i = 0; i < effectItems.length; i++) {
+    addOnEffectsClick(effectItems[i]);
+  }
+  addEffectLevel();
+};
+
+var closeImgUploadDialog = function () {
+  imgUploadDialog.classList.add('hidden');
+  // imgUpload.className = '';
+  document.removeEventListener('keydown', onPopupEscPress);
+  imgUploadCancel.removeEventListener('click', onImgUploadCancelClick);
+  imgUploadCancel.removeEventListener('keydown', onImgUploadCancelEnterPress);
+  imgUploadInput.value = '';
+  effectLevelLinePin.removeEventListener('mouseup', onLevelLinePinMouseup);
+};
+
+var addOnEffectsClick = function (thumbnail) {
+  thumbnail.addEventListener('click', function () {
+    var selectedEffect = thumbnail.querySelector('span').classList[1];
+    uploadPhoto.className = selectedEffect;
+    addEffectLevel();
+  });
+};
+
+var addEffectLevel = function () {
+  if (effectNone.checked) {
+    effectLevel.classList.add('hidden');
+    effectLevelLinePin.removeEventListener('mouseup', onLevelLinePinMouseup);
+  } else {
+    effectLevel.classList.remove('hidden');
+    initEffectLevel();
+    effectLevelLinePin.addEventListener('mouseup', onLevelLinePinMouseup);
+  }
+};
+
+var initEffectLevel = function () {
+  effectLevelLineValue.setAttribute('value', 100);
+  setEffectLevel(effectLevelLineValue.value);
+};
+
+var setEffectLevel = function (value) {
+  effectLevelLineValue.setAttribute('value', value);
+  effectLevelLinePin.style.left = value + '%';
+  effectLevelLineDepth.style.width = value + '%';
+  effectsPreviews[1].style.filter = 'grayscale(' + value / 100 + ')';
+  effectsPreviews[2].style.filter = 'sepia(' + value / 100 + ')';
+  effectsPreviews[3].style.filter = 'invert(' + value + '%)';
+  effectsPreviews[4].style.filter = 'grayscale(' + value * 3 / 100 + 'px)';
+  effectsPreviews[5].style.filter = 'grayscale(' + value * 2 / 100 + 1 + ')';
+};
+
+imgUploadInput.addEventListener('change', function () {
+  openImgUploadDialog();
+});
+
+
