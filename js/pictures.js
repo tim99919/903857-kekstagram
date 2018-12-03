@@ -30,14 +30,13 @@ var imgUploadDialog = imgUploadSection.querySelector('.img-upload__overlay');
 var imgUploadCancel = imgUploadSection.querySelector('.cancel');
 var effectLevel = imgUploadDialog.querySelector('.effect-level');
 var effectLevelLine = imgUploadDialog.querySelector('.effect-level__line');
-var effectLevelLineValue = imgUploadDialog.querySelector('.effect-level__value');
-var effectLevelLinePin = effectLevelLine.querySelector('.effect-level__pin');
-var effectLevelLineDepth = effectLevelLine.querySelector('.effect-level__depth');
+var effectLevelValue = imgUploadDialog.querySelector('.effect-level__value');
+var effectLevelPin = effectLevelLine.querySelector('.effect-level__pin');
+var effectLevelDepth = effectLevelLine.querySelector('.effect-level__depth');
 var effectItems = imgUploadDialog.querySelectorAll('li');
-var effectInputs = imgUploadDialog.querySelectorAll('li > input');
 var effectsPreviews = imgUploadDialog.querySelectorAll('.effects__preview');
-var effectNone = effectInputs[0];
 var uploadPhoto = imgUploadDialog.querySelector('img');
+var effects = imgUploadDialog.querySelectorAll('.effects__radio');
 
 var getRandInt = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -166,51 +165,93 @@ var onImgUploadCancelEnterPress = function (evt) {
   }
 };
 
-var onLevelLinePinMouseup = function () {
-  // Здесь я так понимаю в дальнейшем нужно будет обработать перемещение пина
-  // Пока неясно как это делается
-  var value = Math.floor(effectLevelLinePin.offsetLeft / effectLevelLine.offsetWidth * 100);
-  setEffectLevel(value);
+var onEffectClick = function (evt) {
+  var effect = evt.target.id.substr(7);
+  uploadPhoto.className = 'effects__preview--' + effect;
+  showEffectLevel(effect);
+  effectLevelValue.setAttribute('value', 100);
+  effectLevelPin.style.left = 100 + '%';
+  effectLevelDepth.style.width = 100 + '%';
+
+};
+
+var onLevelLinePinMouseup = function (evt) {
+  var effect = uploadPhoto.className.substr(18);
+  var value = Math.round(evt.target.offsetLeft / evt.target.offsetParent.offsetWidth * 100);
+  effectLevelValue.value = value;
+
+  switch (effect) {
+    case 'chrome':
+      uploadPhoto.style.webkitFilter = 'grayscale(' + value / 100 + ')';
+      uploadPhoto.style.filter = 'grayscale(' + value / 100 + ')';
+      break;
+
+    case 'sepia':
+      uploadPhoto.style.webkitFilter = 'sepia(' + value / 100 + ')';
+      uploadPhoto.style.filter = 'sepia(' + value / 100 + ')';
+      break;
+
+    case 'marvin':
+      uploadPhoto.style.webkitFilter = 'invert(' + value + '%)';
+      uploadPhoto.style.filter = 'invert(' + value + '%)';
+      break;
+
+    case 'phobos':
+      uploadPhoto.style.webkitFilter = 'blur(' + value / 100 * 2 + 1 + 'px)';
+      uploadPhoto.style.filter = 'blur(' + value / 100 * 2 + 1 + 'px)';
+      break;
+
+    case 'heat':
+      uploadPhoto.style.webkitFilter = 'grayscale(' + value / 100 * 3 + ')';
+      uploadPhoto.style.filter = 'grayscale(' + value / 100 * 3 + ')';
+      break;
+
+    default:
+      uploadPhoto.style.filter = '';
+      break;
+  }
+  console.log(getComputedStyle(uploadPhoto).filter);
 };
 
 var openImgUploadDialog = function () {
   imgUploadDialog.classList.remove('hidden');
+  effectLevel.classList.add('hidden');
   document.addEventListener('keydown', onPopupEscPress);
   imgUploadCancel.addEventListener('click', onImgUploadCancelClick);
   imgUploadCancel.addEventListener('keydown', onImgUploadCancelEnterPress);
 
-  for (var i = 0; i < effectItems.length; i++) {
-    addOnEffectsClick(effectItems[i]);
+  for (var i = 0; i < effects.length; i++) {
+    addOnEffectsClick(effects[i]);
   }
-  addEffectLevel();
+
 };
 
 var closeImgUploadDialog = function () {
   imgUploadDialog.classList.add('hidden');
-  // imgUpload.className = '';
   document.removeEventListener('keydown', onPopupEscPress);
   imgUploadCancel.removeEventListener('click', onImgUploadCancelClick);
   imgUploadCancel.removeEventListener('keydown', onImgUploadCancelEnterPress);
   imgUploadInput.value = '';
-  effectLevelLinePin.removeEventListener('mouseup', onLevelLinePinMouseup);
+  for (var i = 0; i < effects.length; i++) {
+    removeOnEffectsClick(effects[i]);
+  }
 };
 
 var addOnEffectsClick = function (thumbnail) {
-  thumbnail.addEventListener('click', function () {
-    var selectedEffect = thumbnail.querySelector('span').classList[1];
-    uploadPhoto.className = selectedEffect;
-    addEffectLevel();
-  });
+  thumbnail.addEventListener('change', onEffectClick);
 };
 
-var addEffectLevel = function () {
-  if (effectNone.checked) {
+var removeOnEffectsClick = function (thumbnail) {
+  thumbnail.removeEventListener('change', onEffectClick);
+};
+
+var showEffectLevel = function (effect) {
+  if (effect === 'none') {
     effectLevel.classList.add('hidden');
-    effectLevelLinePin.removeEventListener('mouseup', onLevelLinePinMouseup);
+    effectLevelPin.removeEventListener('mouseup', onLevelLinePinMouseup);
   } else {
     effectLevel.classList.remove('hidden');
-    initEffectLevel();
-    effectLevelLinePin.addEventListener('mouseup', onLevelLinePinMouseup);
+    effectLevelPin.addEventListener('mouseup', onLevelLinePinMouseup);
   }
 };
 
@@ -220,7 +261,7 @@ var initEffectLevel = function () {
 };
 
 var setEffectLevel = function (value) {
-  effectLevelLineValue.setAttribute('value', value);
+  effectLevelValue.setAttribute('value', value);
   effectLevelLinePin.style.left = value + '%';
   effectLevelLineDepth.style.width = value + '%';
   effectsPreviews[1].style.filter = 'grayscale(' + value / 100 + ')';
