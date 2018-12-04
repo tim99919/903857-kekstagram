@@ -256,7 +256,6 @@ var closeImgUploadDialog = function () {
 var showBigPicDiaolog = function (picture) {
   bigPictureDiaolog.classList.remove('hidden');
   bigPictureDiaolog.querySelector('.big-picture__img').children[0].setAttribute('src', picture.url);
-  bigPictureDiaologCancelButton.focus();
 
   showPictureStatistic(picture);
   showComments(picture);
