@@ -98,7 +98,8 @@ var showPhotoCards = function () {
 
 var setPhotoId = function () {
   for (var i = 0; i < pictures.length; i++) {
-    pictures[i].children[0].id = i;
+    // pictures[i].children[0].id = i;
+    pictures[i].classList.add(i);
   }
 };
 
@@ -183,34 +184,30 @@ var onLevelPinMouseup = function (evt) {
   evt.target.nextElementSibling.style.width = value + '%';
   switch (effect) {
     case 'chrome':
-      uploadPhoto.style.webkitFilter = 'grayscale(' + value / 100 + ')';
       uploadPhoto.style.filter = 'grayscale(' + value / 100 + ')';
       break;
 
     case 'sepia':
-      uploadPhoto.style.webkitFilter = 'sepia(' + value / 100 + ')';
       uploadPhoto.style.filter = 'sepia(' + value / 100 + ')';
       break;
 
     case 'marvin':
-      uploadPhoto.style.webkitFilter = 'invert(' + value + '%)';
       uploadPhoto.style.filter = 'invert(' + value + '%)';
       break;
 
     case 'phobos':
-      uploadPhoto.style.webkitFilter = 'blur(' + value / 100 * 2 + 1 + 'px)';
       uploadPhoto.style.filter = 'blur(' + value / 100 * 2 + 1 + 'px)';
       break;
 
     case 'heat':
-      uploadPhoto.style.webkitFilter = 'brightness(' + value / 100 * 3 + ')';
       uploadPhoto.style.filter = 'brightness(' + value / 100 * 3 + ')';
       break;
 
     default:
       uploadPhoto.style.filter = '';
       break;
-  }
+  };
+  uploadPhoto.style.webkitFilter = uploadPhoto.style.filter;
 };
 
 var onBigPicDialogEscPress = function (evt) {
@@ -279,18 +276,51 @@ imgUploadFile.addEventListener('change', function () {
   openImgUploadDialog();
 });
 
-picturesElement.addEventListener('click', function (evt) {
-  var target = evt.target;
-  if (target.offsetParent.tagName === 'A') {
-    showBigPicDiaolog(photoCards[target.id]);
-  }
-});
+var onPictureClick = function (evt) {
 
-picturesElement.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
+  if (evt.target.tagName === 'A') {
     var target = evt.target;
-    if (target.tagName === 'A') {
-      showBigPicDiaolog(photoCards[target.firstElementChild.id]);
-    }
+  } else {
+    target = evt.target.offsetParent;
   }
-});
+
+  var photoNumber = target.classList[1];
+  showBigPicDiaolog(photoCards[photoNumber]);
+  console.log(target);
+};
+
+// var onPictureEnterPress = function (evt) {
+//   // var target = evt.target;
+//   // showBigPicDiaolog(photoCards[target.id]);
+//   console.log(evt.target);
+// };
+
+var addOnPictureClickListener = function (thumbnail) {
+  thumbnail.addEventListener('click', onPictureClick);
+};
+
+for (var i = 0; i < pictures.length; i++) {
+  addOnPictureClickListener(pictures[i]);
+}
+
+// picturesElement.querySelector('.picture').addEventListener('click', function (evt) {
+//   var target = evt.target;
+//   showBigPicDiaolog(photoCards[target.id]);
+// });
+
+
+// picturesElement.addEventListener('click', function (evt) {
+//   var target = evt.target;
+//   if (target.offsetParent.tagName === 'A') {
+//     showBigPicDiaolog(photoCards[target.id]);
+//   }
+// });
+
+// picturesElement.addEventListener('keydown', function (evt) {
+//   if (evt.keyCode === ENTER_KEYCODE) {
+//     var target = evt.target;
+//     if (target.tagName === 'A') {
+//       showBigPicDiaolog(photoCards[target.firstElementChild.id]);
+//     }
+//   }
+// });
