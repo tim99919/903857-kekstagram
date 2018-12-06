@@ -209,7 +209,7 @@ var onLevelPinMouseup = function (evt) {
     default:
       uploadPhoto.style.filter = '';
       break;
-  };
+  }
   uploadPhoto.style.webkitFilter = uploadPhoto.style.filter;
 };
 
