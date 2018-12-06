@@ -1,7 +1,6 @@
 'use strict';
 
 var ESC_KEYCODE = 27;
-var ENTER_KEYCODE = 13;
 
 var COMMENTS = [
   'Всё отлично!',
@@ -98,8 +97,7 @@ var showPhotoCards = function () {
 
 var setPhotoId = function () {
   for (var i = 0; i < pictures.length; i++) {
-    // pictures[i].children[0].id = i;
-    pictures[i].classList.add(i);
+    pictures[i].id = i;
   }
 };
 
@@ -177,6 +175,11 @@ var onEffectClick = function (evt) {
   showEffectLevel(effect);
 };
 
+var onPictureClick = function (evt) {
+  var target = evt.currentTarget;
+  showBigPicDiaolog(photoCards[target.id]);
+};
+
 var onLevelPinMouseup = function (evt) {
   var effect = uploadPhoto.className.substr(18);
   var value = Math.round(evt.target.offsetLeft / evt.target.offsetParent.offsetWidth * 100);
@@ -219,6 +222,10 @@ var onBigPicDialogEscPress = function (evt) {
 
 var addOnEffectsClick = function (thumbnail) {
   thumbnail.addEventListener('change', onEffectClick);
+};
+
+var addOnPictureClickListener = function (thumbnail) {
+  thumbnail.addEventListener('click', onPictureClick);
 };
 
 var removeOnEffectsClick = function (thumbnail) {
@@ -276,51 +283,6 @@ imgUploadFile.addEventListener('change', function () {
   openImgUploadDialog();
 });
 
-var onPictureClick = function (evt) {
-
-  if (evt.target.tagName === 'A') {
-    var target = evt.target;
-  } else {
-    target = evt.target.offsetParent;
-  }
-
-  var photoNumber = target.classList[1];
-  showBigPicDiaolog(photoCards[photoNumber]);
-  console.log(target);
-};
-
-// var onPictureEnterPress = function (evt) {
-//   // var target = evt.target;
-//   // showBigPicDiaolog(photoCards[target.id]);
-//   console.log(evt.target);
-// };
-
-var addOnPictureClickListener = function (thumbnail) {
-  thumbnail.addEventListener('click', onPictureClick);
-};
-
 for (var i = 0; i < pictures.length; i++) {
   addOnPictureClickListener(pictures[i]);
 }
-
-// picturesElement.querySelector('.picture').addEventListener('click', function (evt) {
-//   var target = evt.target;
-//   showBigPicDiaolog(photoCards[target.id]);
-// });
-
-
-// picturesElement.addEventListener('click', function (evt) {
-//   var target = evt.target;
-//   if (target.offsetParent.tagName === 'A') {
-//     showBigPicDiaolog(photoCards[target.id]);
-//   }
-// });
-
-// picturesElement.addEventListener('keydown', function (evt) {
-//   if (evt.keyCode === ENTER_KEYCODE) {
-//     var target = evt.target;
-//     if (target.tagName === 'A') {
-//       showBigPicDiaolog(photoCards[target.firstElementChild.id]);
-//     }
-//   }
-// });
