@@ -164,7 +164,7 @@ var setPhotoStyle = function (value) {
       break;
 
     case 'phobos':
-      uploadedPhoto.style.filter = 'blur(' + value / 100 * 2 + 1 + 'px)';
+      uploadedPhoto.style.filter = 'blur(' + (value / 100 * 2 + 1) + 'px)';
       break;
 
     case 'heat':
