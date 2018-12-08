@@ -27,7 +27,7 @@ var imgUploadFile = imgUploadSection.querySelector('#upload-file');
 var imgUploadDialog = imgUploadSection.querySelector('.img-upload__overlay');
 var imgUploadCancelButton = imgUploadSection.querySelector('.cancel');
 var imgUploadHashtagsInput = imgUploadDialog.querySelector('.text__hashtags');
-var imgUploadCommentInput = imgUploadDialog.querySelector('.text__description');
+var imgUploadDescriptionInput = imgUploadDialog.querySelector('.text__description');
 var effectLevel = imgUploadDialog.querySelector('.effect-level');
 var effectLevelLine = effectLevel.querySelector('.effect-level__line');
 var effectLevelValue = effectLevel.querySelector('.effect-level__value');
@@ -253,11 +253,11 @@ var onHashtagsInputBlur = function () {
   imgUploadHashtagsInput.removeEventListener('input', hashtagsInputCustomValidation);
 };
 
-var onCommentInputFocus = function () {
+var onDescriptionInputFocus = function () {
   document.removeEventListener('keydown', onImgUploadDialogEscPress);
 };
 
-var onCommentInputBlur = function () {
+var onDescriptionInputBlur = function () {
   document.addEventListener('keydown', onImgUploadDialogEscPress);
 };
 
@@ -339,8 +339,8 @@ var openImgUploadDialog = function () {
   imgUploadCancelButton.onclick = closeImgUploadDialog;
   imgUploadHashtagsInput.onfocus = onHashtagsInputFocus;
   imgUploadHashtagsInput.onblur = onHashtagsInputBlur;
-  imgUploadCommentInput.onfocus = onCommentInputFocus;
-  imgUploadCommentInput.onblur = onCommentInputBlur;
+  imgUploadDescriptionInput.onfocus = onDescriptionInputFocus;
+  imgUploadDescriptionInput.onblur = onDescriptionInputBlur;
   addListeners(effects, 'change', onEffectClick);
 };
 
