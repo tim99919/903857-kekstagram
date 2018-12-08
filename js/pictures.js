@@ -145,9 +145,42 @@ var clearForm = function (inputs) {
   }
 };
 
+var setPhotoStyle = function (value) {
+  var effect = uploadedPhoto.className.substr(18);
+
+  effectLevelValue.value = value;
+
+  switch (effect) {
+    case 'chrome':
+      uploadedPhoto.style.filter = 'grayscale(' + value / 100 + ')';
+      break;
+
+    case 'sepia':
+      uploadedPhoto.style.filter = 'sepia(' + value / 100 + ')';
+      break;
+
+    case 'marvin':
+      uploadedPhoto.style.filter = 'invert(' + value + '%)';
+      break;
+
+    case 'phobos':
+      uploadedPhoto.style.filter = 'blur(' + value / 100 * 2 + 1 + 'px)';
+      break;
+
+    case 'heat':
+      uploadedPhoto.style.filter = 'brightness(' + value / 100 * 3 + ')';
+      break;
+
+    default:
+      uploadedPhoto.style.filter = '';
+      break;
+  }
+  uploadedPhoto.style.webkitFilter = uploadedPhoto.style.filter;
+};
+
 var setDefaultPhotoStyle = function () {
   uploadedPhoto.style.filter = '';
-  effectLevelValue.setAttribute('value', 100);
+  effectLevelValue.value = 100;
   effectLevelPin.style.left = 100 + '%';
   effectLevelDepth.style.width = 100 + '%';
 };
@@ -247,37 +280,43 @@ var onPictureClick = function (evt) {
   showBigPicDiaolog(photoCards[target.id]);
 };
 
-var onLevelPinMouseup = function (evt) {
-  var effect = uploadedPhoto.className.substr(18);
-  var value = Math.round(evt.target.offsetLeft / evt.target.offsetParent.offsetWidth * 100);
-  effectLevelValue.value = value;
-  evt.target.nextElementSibling.style.width = value + '%';
-  switch (effect) {
-    case 'chrome':
-      uploadedPhoto.style.filter = 'grayscale(' + value / 100 + ')';
-      break;
+var onLevelPinDrag = function (evt) {
+  evt.preventDefault();
 
-    case 'sepia':
-      uploadedPhoto.style.filter = 'sepia(' + value / 100 + ')';
-      break;
+  var startCoordinate = evt.clientX;
+  var lineWidth = effectLevelLine.offsetWidth;
 
-    case 'marvin':
-      uploadedPhoto.style.filter = 'invert(' + value + '%)';
-      break;
+  var getValue = function () {
+    return Math.round(effectLevelPin.offsetLeft / lineWidth * 100);
+  };
 
-    case 'phobos':
-      uploadedPhoto.style.filter = 'blur(' + value / 100 * 2 + 1 + 'px)';
-      break;
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
 
-    case 'heat':
-      uploadedPhoto.style.filter = 'brightness(' + value / 100 * 3 + ')';
-      break;
+    var shift = startCoordinate - moveEvt.clientX;
+    startCoordinate = moveEvt.clientX;
 
-    default:
-      uploadedPhoto.style.filter = '';
-      break;
-  }
-  uploadedPhoto.style.webkitFilter = uploadedPhoto.style.filter;
+    if (shift > effectLevelPin.offsetLeft) {
+      effectLevelPin.style.left = '0px';
+    } else if (shift < effectLevelPin.offsetLeft - lineWidth) {
+      effectLevelPin.style.left = lineWidth + 'px';
+    } else {
+      effectLevelPin.style.left = (effectLevelPin.offsetLeft - shift) + 'px';
+    }
+
+    effectLevelDepth.style.width = effectLevelPin.offsetLeft + 'px';
+    setPhotoStyle(getValue());
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 };
 
 var removeListeners = function (elements, operation, action) {
@@ -296,7 +335,7 @@ var openImgUploadDialog = function () {
   imgUploadDialog.classList.remove('hidden');
   effectLevel.classList.add('hidden');
   document.addEventListener('keydown', onImgUploadDialogEscPress);
-  effectLevelPin.addEventListener('mouseup', onLevelPinMouseup);
+  effectLevelPin.addEventListener('mousedown', onLevelPinDrag);
   imgUploadCancelButton.onclick = closeImgUploadDialog;
   imgUploadHashtagsInput.onfocus = onHashtagsInputFocus;
   imgUploadHashtagsInput.onblur = onHashtagsInputBlur;
@@ -308,7 +347,7 @@ var openImgUploadDialog = function () {
 var closeImgUploadDialog = function () {
   imgUploadDialog.classList.add('hidden');
   document.removeEventListener('keydown', onImgUploadDialogEscPress);
-  effectLevelPin.removeEventListener('mouseup', onLevelPinMouseup);
+  effectLevelPin.removeEventListener('mousedown', onLevelPinDrag);
   clearForm(uploadFormInputs);
   removeListeners(effects, 'change', onEffectClick);
 };
