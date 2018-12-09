@@ -30,7 +30,11 @@
       <section class="img-upload">
         <div class="img-upload__wrapper">
           <h2 class="img-upload__title  visually-hidden">Загрузка фотографии</h2>
-          <form class="img-upload__form" id="upload-select-image" method="post" enctype="multipart/form-data" autocomplete="off">
+          <form class="img-upload__form" id="upload-select-image"
+            method="post"
+            enctype="multipart/form-data"
+            autocomplete="off"
+            action="https://js.dump.academy/kekstagram">
 
             <!-- Изначальное состояние поля для загрузки изображения -->
             <fieldset class="img-upload__start">
@@ -72,7 +76,7 @@
                 <fieldset class="img-upload__effects  effects">
                   <ul class="effects__list">
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio  visually-hidden" name="effect" id="effect-none" value="none">
+                      <input type="radio" class="effects__radio  visually-hidden" name="effect" id="effect-none" value="none" checked>
                       <label for="effect-none" class="effects__label">
                         <span class="effects__preview  effects__preview--none">Превью фото без эффекта</span>
                         Оригинал
@@ -107,7 +111,7 @@
                       </label>
                     </li>
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio  visually-hidden" name="effect" id="effect-heat" value="heat" checked>
+                      <input type="radio" class="effects__radio  visually-hidden" name="effect" id="effect-heat" value="heat">
                       <label for="effect-heat" class="effects__label">
                         <span class="effects__preview  effects__preview--heat">Превью эффекта Зной</span>
                         Зной
@@ -118,8 +122,8 @@
 
                 <!-- Добавление хэш-тегов и комментария к изображению -->
                 <fieldset class="img-upload__text text">
-                  <input class="text__hashtags" name="hashtags" placeholder="#хэш-тег">
-                  <textarea class="text__description" name="description" placeholder="Ваш комментарий..."></textarea>
+                  <input class="text__hashtags" name="hashtags" minlength="2" maxlength="104" placeholder="#хэш-тег">
+                  <textarea class="text__description" name="description" maxlength="140" placeholder="Ваш комментарий..."></textarea>
                 </fieldset>
 
                 <!-- Кнопка для отправки данных на сервер -->
@@ -171,7 +175,7 @@
           <!-- Форма для отправки комментария -->
           <div class="social__footer">
             <img class="social__picture" src="img/avatar-6.svg" alt="Аватар комментатора фотографии" width="35" height="35">
-            <input type="text" class="social__footer-text" placeholder="Ваш комментарий...">
+            <input type="text" class="social__footer-text" placeholder="Ваш комментарий..." autofocus>
             <button type="button" class="social__footer-btn" name="button">Отправить</button>
           </div>
         </div>
