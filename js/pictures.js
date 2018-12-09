@@ -76,12 +76,12 @@ var getPhotos = function () {
 
 var photoCards = getPhotos();
 
-var renderPhotoCard = function (picture, i) {
+var renderPhotoCard = function (i) {
   var pictureElement = pictureTemplate.cloneNode(true);
   pictureElement.id = i;
-  pictureElement.querySelector('img').setAttribute('src', picture.url);
-  pictureElement.querySelector('.picture__likes').textContent = picture.likes;
-  pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
+  pictureElement.querySelector('img').setAttribute('src', photoCards[i].url);
+  pictureElement.querySelector('.picture__likes').textContent = photoCards[i].likes;
+  pictureElement.querySelector('.picture__comments').textContent = photoCards[i].comments.length;
 
   return pictureElement;
 };
@@ -90,7 +90,7 @@ var showPhotoCards = function () {
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < photoCards.length; i++) {
-    fragment.appendChild(renderPhotoCard(photoCards[i], i));
+    fragment.appendChild(renderPhotoCard(i));
   }
 
   picturesElement.appendChild(fragment);
@@ -139,9 +139,9 @@ var hideCommentsStat = function () {
   document.querySelector('.comments-loader').classList.add('visually-hidden');
 };
 
-var clearForm = function (inputs) {
-  for (var i = 0; i < inputs.length; i++) {
-    inputs[i].value = '';
+var clearForm = function () {
+  for (var i = 0; i < uploadFormInputs.length; i++) {
+    uploadFormInputs[i].value = '';
   }
 };
 
@@ -197,9 +197,10 @@ var hashtagsInputCustomValidation = function (evt) {
   var target = evt.target;
   var hashtagsStr = target.value;
   var hashtags = target.value.split(' ');
+  var rules = [];
   var hashtag;
   var isSharp = true;
-  var isLength = true;
+  var wrongLength = true;
   var isReapeat = false;
 
   for (var i = 0; i < hashtags.length; i++) {
@@ -207,10 +208,12 @@ var hashtagsInputCustomValidation = function (evt) {
     if (!/#/.test(hashtag[0])) {
       isSharp = false;
       break;
-    } else if (hashtag.length < 2 || hashtag.length > 20) {
-      isLength = false;
+    }
+    if (hashtag.length < 2 || hashtag.length > 20) {
+      wrongLength = false;
       break;
-    } else if (hashtags.length > 1) {
+    }
+    if (hashtags.length > 1) {
       for (var j = i + 1; j < hashtags.length; j++) {
         var anotherHashtag = hashtags[j];
         if (hashtag.toLowerCase() === anotherHashtag.toLowerCase()) {
@@ -222,18 +225,21 @@ var hashtagsInputCustomValidation = function (evt) {
   }
 
   if (!isSharp) {
-    target.setCustomValidity('Название хэштэга должно начинаться с символа #');
-  } else if (!isLength) {
-    target.setCustomValidity('Недопустимая длина хэштэга');
-  } else if (hashtags.length > 5) {
-    target.setCustomValidity('Возможно указать не более 5-ти хэштэгов');
-  } else if (isReapeat) {
-    target.setCustomValidity('Хэштеги не должны повторяться');
-  } else if (/\S#/.test(hashtagsStr)) {
-    target.setCustomValidity('Хэштеги разделяются пробелами');
-  } else {
-    target.setCustomValidity('');
+    rules.push('Название хэштэга должно начинаться с символа #');
   }
+  if (!wrongLength) {
+    rules.push('Недопустимая длина хэштэга');
+  }
+  if (hashtags.length > 5) {
+    rules.push('Возможно указать не более 5-ти хэштэгов');
+  }
+  if (isReapeat) {
+    rules.push('Хэштеги не должны повторяться');
+  }
+  if (/\S#/.test(hashtagsStr)) {
+    rules.push('Хэштеги разделяются пробелами');
+  }
+  target.setCustomValidity(rules.join(', '));
 };
 
 var onImgUploadDialogEscPress = function (evt) {
@@ -336,11 +342,11 @@ var openImgUploadDialog = function () {
   effectLevel.classList.add('hidden');
   document.addEventListener('keydown', onImgUploadDialogEscPress);
   effectLevelPin.addEventListener('mousedown', onLevelPinDrag);
-  imgUploadCancelButton.onclick = closeImgUploadDialog;
-  imgUploadHashtagsInput.onfocus = onHashtagsInputFocus;
-  imgUploadHashtagsInput.onblur = onHashtagsInputBlur;
-  imgUploadDescriptionInput.onfocus = onDescriptionInputFocus;
-  imgUploadDescriptionInput.onblur = onDescriptionInputBlur;
+  imgUploadCancelButton.addEventListener('click', closeImgUploadDialog);
+  imgUploadHashtagsInput.addEventListener('focus', onHashtagsInputFocus);
+  imgUploadHashtagsInput.addEventListener('blur', onHashtagsInputBlur);
+  imgUploadDescriptionInput.addEventListener('focus', onDescriptionInputFocus);
+  imgUploadDescriptionInput.addEventListener('blur', onDescriptionInputBlur);
   addListeners(effects, 'change', onEffectClick);
 };
 
@@ -348,6 +354,11 @@ var closeImgUploadDialog = function () {
   imgUploadDialog.classList.add('hidden');
   document.removeEventListener('keydown', onImgUploadDialogEscPress);
   effectLevelPin.removeEventListener('mousedown', onLevelPinDrag);
+  imgUploadCancelButton.removeEventListener('click', closeImgUploadDialog);
+  imgUploadHashtagsInput.removeEventListener('focus', onHashtagsInputFocus);
+  imgUploadHashtagsInput.removeEventListener('blur', onHashtagsInputBlur);
+  imgUploadDescriptionInput.removeEventListener('focus', onDescriptionInputFocus);
+  imgUploadDescriptionInput.removeEventListener('blur', onDescriptionInputBlur);
   clearForm(uploadFormInputs);
   removeListeners(effects, 'change', onEffectClick);
 };
@@ -355,17 +366,17 @@ var closeImgUploadDialog = function () {
 var showBigPicDiaolog = function (picture) {
   bigPictureDiaolog.classList.remove('hidden');
   bigPictureDiaolog.querySelector('.big-picture__img').children[0].setAttribute('src', picture.url);
-  bigPictureDiaologCancelButton.onclick = closeBigPicDialog;
+  bigPictureDiaologCancelButton.addEventListener('click', closeBigPicDialog);
+  document.addEventListener('keydown', onBigPicDialogEscPress);
 
   showPictureStatistic(picture);
   showComments(picture);
   showPictureDescription(picture);
-
-  document.addEventListener('keydown', onBigPicDialogEscPress);
 };
 
 var closeBigPicDialog = function () {
   bigPictureDiaolog.classList.add('hidden');
+  bigPictureDiaologCancelButton.removeEventListener('click', closeBigPicDialog);
   document.removeEventListener('keydown', onBigPicDialogEscPress);
 };
 
