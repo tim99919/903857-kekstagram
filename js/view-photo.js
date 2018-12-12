@@ -2,6 +2,7 @@
 
 (function () {
 
+  var documentBody = document.body;
   var bigPictureDiaolog = document.querySelector('.big-picture');
   var bigPictureDiaologCancelButton = bigPictureDiaolog.querySelector('#picture-cancel');
   var socialComments = bigPictureDiaolog.querySelector('.social__comments');
@@ -44,6 +45,7 @@
     showComments(picture);
     showPictureDescription(picture);
 
+    documentBody.classList.add('modal-open');
     bigPictureDiaolog.classList.remove('hidden');
     bigPictureDiaolog.querySelector('.big-picture__img').children[0].src = picture.url;
     bigPictureDiaologCancelButton.addEventListener('click', closeBigPicDialog);
@@ -52,6 +54,7 @@
   };
 
   var closeBigPicDialog = function () {
+    documentBody.classList.remove('modal-open');
     bigPictureDiaolog.classList.add('hidden');
     bigPictureDiaologCancelButton.removeEventListener('click', closeBigPicDialog);
     document.removeEventListener('keydown', onBigPicDialogEscPress);
