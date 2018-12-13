@@ -70,28 +70,20 @@
     var target = evt.target;
     var currentScaleValue = getCurrentScaleValue(target.nextElementSibling.value) - PhotoScale.step;
 
-    target.nextElementSibling.value = currentScaleValue + '%';
-
-    if (currentScaleValue < PhotoScale.min) {
-      target.nextElementSibling.value = PhotoScale.min + '%';
-      currentScaleValue = PhotoScale.min;
+    if (currentScaleValue >= PhotoScale.min) {
+      target.nextElementSibling.value = currentScaleValue + '%';
+      transformImgScale(currentScaleValue);
     }
-
-    transformImgScale(currentScaleValue);
   };
 
   var onBiggerScaleButtonClick = function (evt) {
     var target = evt.target;
     var currentScaleValue = getCurrentScaleValue(target.previousElementSibling.value) + PhotoScale.step;
 
-    target.previousElementSibling.value = currentScaleValue + '%';
-
-    if (currentScaleValue > PhotoScale.max) {
-      target.previousElementSibling.value = PhotoScale.max + '%';
-      currentScaleValue = PhotoScale.max;
+    if (currentScaleValue <= PhotoScale.max) {
+      target.previousElementSibling.value = currentScaleValue + '%';
+      transformImgScale(currentScaleValue);
     }
-
-    transformImgScale(currentScaleValue);
   };
 
   var onHashtagsInputFocus = function () {
