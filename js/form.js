@@ -3,6 +3,7 @@
 (function () {
 
   var imgUploadForm = document.querySelector('.img-upload__form');
+  var scaleValue = imgUploadForm.querySelector('.scale__control--value');
   var effectLevelValue = imgUploadForm.querySelector('.effect-level__value');
   var uploadFormInputs = imgUploadForm.querySelectorAll('input');
   var commentTextarea = imgUploadForm.querySelector('.text__description');
@@ -19,7 +20,9 @@
         }
         uploadFormInputs[i].value = '';
       }
+
       commentTextarea.value = '';
+      scaleValue.value = '100%';
     },
 
     setEffectInputValue: function (newValue) {

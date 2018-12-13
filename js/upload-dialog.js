@@ -1,11 +1,22 @@
 'use strict';
 
 (function () {
+
+  var DEFAULT_EFFECT_VALUE = 100;
+
+  var PhotoScale = {
+    min: 25,
+    max: 100,
+    step: 25
+  };
+
   var imgUploadDialog = document.querySelector('.img-upload__overlay');
   var imgUploadFile = document.querySelector('#upload-file');
 
   var uploadedImgPreview = imgUploadDialog.querySelector('.img-upload__preview').firstElementChild;
   var imgUploadCancelButton = imgUploadDialog.querySelector('.cancel');
+  var smallerScaleButton = imgUploadDialog.querySelector('.scale__control--smaller');
+  var biggerScaleButton = imgUploadDialog.querySelector('.scale__control--bigger');
   var imgUploadHashtagsInput = imgUploadDialog.querySelector('.text__hashtags');
   var imgUploadDescriptionInput = imgUploadDialog.querySelector('.text__description');
 
@@ -16,6 +27,13 @@
 
   var effectPreviews = imgUploadDialog.querySelectorAll('.effects__radio');
 
+  var transformImgScale = function (value) {
+    uploadedImgPreview.style = 'transform: scale(' + value / 100 + ')';
+  };
+
+  var getCurrentScaleValue = function (input) {
+    return parseInt(input.substr(0, input.length - 1), 10);
+  };
 
   var onLevelPinDrag = function (evt) {
     window.slider.initSlider(evt, effectLevelPin, effectLevelLine, effectLevelDepth, window.effect.setPhotoStyle, window.form.setEffectInputValue);
@@ -26,10 +44,9 @@
   };
 
   var showEffectLevel = function () {
-    var DEFAULT_VALUE = 100;
     effectLevel.classList.remove('hidden');
-    window.effect.setPhotoStyle(DEFAULT_VALUE);
-    window.form.setEffectInputValue(DEFAULT_VALUE);
+    window.effect.setPhotoStyle(DEFAULT_EFFECT_VALUE);
+    window.form.setEffectInputValue(DEFAULT_EFFECT_VALUE);
     window.slider.setDefault(effectLevelPin, effectLevelDepth);
     effectLevelPin.addEventListener('mousedown', onLevelPinDrag);
   };
@@ -47,6 +64,34 @@
     } else {
       showEffectLevel();
     }
+  };
+
+  var onSmallerScaleButtonClick = function (evt) {
+    var target = evt.target;
+    var currentScaleValue = getCurrentScaleValue(target.nextElementSibling.value) - PhotoScale.step;
+
+    target.nextElementSibling.value = currentScaleValue + '%';
+
+    if (currentScaleValue < PhotoScale.min) {
+      target.nextElementSibling.value = PhotoScale.min + '%';
+      currentScaleValue = PhotoScale.min;
+    }
+
+    transformImgScale(currentScaleValue);
+  };
+
+  var onBiggerScaleButtonClick = function (evt) {
+    var target = evt.target;
+    var currentScaleValue = getCurrentScaleValue(target.previousElementSibling.value) + PhotoScale.step;
+
+    target.previousElementSibling.value = currentScaleValue + '%';
+
+    if (currentScaleValue > PhotoScale.max) {
+      target.previousElementSibling.value = PhotoScale.max + '%';
+      currentScaleValue = PhotoScale.max;
+    }
+
+    transformImgScale(currentScaleValue);
   };
 
   var onHashtagsInputFocus = function () {
@@ -77,6 +122,8 @@
     imgUploadHashtagsInput.addEventListener('blur', onHashtagsInputBlur);
     imgUploadDescriptionInput.addEventListener('focus', onDescriptionInputFocus);
     imgUploadDescriptionInput.addEventListener('blur', onDescriptionInputBlur);
+    smallerScaleButton.addEventListener('click', onSmallerScaleButtonClick);
+    biggerScaleButton.addEventListener('click', onBiggerScaleButtonClick);
     window.util.addListeners(effectPreviews, 'change', onEffectClick);
   };
 
@@ -89,6 +136,8 @@
     imgUploadHashtagsInput.removeEventListener('blur', onHashtagsInputBlur);
     imgUploadDescriptionInput.removeEventListener('focus', onDescriptionInputFocus);
     imgUploadDescriptionInput.removeEventListener('blur', onDescriptionInputBlur);
+    smallerScaleButton.removeEventListener('click', onSmallerScaleButtonClick);
+    biggerScaleButton.removeEventListener('click', onBiggerScaleButtonClick);
     window.util.removeListeners(effectPreviews, 'change', onEffectClick);
     window.form.clearForm();
     window.effect.clearPhotoStyle();
