@@ -36,7 +36,7 @@
       var rules = [];
       var hashtag;
       var isSharp = true;
-      var wrongLength = true;
+      var wrongLength = false;
       var isReapeat = false;
 
       for (var i = 0; i < hashtags.length; i++) {
@@ -46,7 +46,7 @@
           break;
         }
         if (hashtag.length < 2 || hashtag.length > 20) {
-          wrongLength = false;
+          wrongLength = true;
           break;
         }
         if (hashtags.length > 1) {
@@ -63,7 +63,7 @@
       if (!isSharp) {
         rules.push('Название хэштэга должно начинаться с символа #');
       }
-      if (!wrongLength) {
+      if (wrongLength) {
         rules.push('Недопустимая длина хэштэга');
       }
       if (hashtags.length > 5) {
