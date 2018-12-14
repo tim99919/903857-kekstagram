@@ -28,11 +28,15 @@
   var effectPreviews = imgUploadDialog.querySelectorAll('.effects__radio');
 
   var transformImgScale = function (value) {
-    uploadedImgPreview.style = 'transform: scale(' + value / 100 + ')';
+    uploadedImgPreview.style.transform = 'scale(' + value / 100 + ')';
   };
 
   var getCurrentScaleValue = function (input) {
     return parseInt(input.substr(0, input.length - 1), 10);
+  };
+
+  var showSuccessMessage = function (status) {
+
   };
 
   var onLevelPinDrag = function (evt) {
@@ -104,35 +108,87 @@
     document.addEventListener('keydown', onImgUploadDialogEscPress);
   };
 
-  var openImgUploadDialog = function () {
-    imgUploadDialog.classList.remove('hidden');
-    effectLevel.classList.add('hidden');
+  var submitMessage = {
+    onError: function () {
 
-    document.addEventListener('keydown', onImgUploadDialogEscPress);
-    imgUploadCancelButton.addEventListener('click', closeImgUploadDialog);
-    imgUploadHashtagsInput.addEventListener('focus', onHashtagsInputFocus);
-    imgUploadHashtagsInput.addEventListener('blur', onHashtagsInputBlur);
-    imgUploadDescriptionInput.addEventListener('focus', onDescriptionInputFocus);
-    imgUploadDescriptionInput.addEventListener('blur', onDescriptionInputBlur);
-    smallerScaleButton.addEventListener('click', onSmallerScaleButtonClick);
-    biggerScaleButton.addEventListener('click', onBiggerScaleButtonClick);
-    window.util.addListeners(effectPreviews, 'change', onEffectClick);
+    },
+
+    onSuccess: function () {
+      closeImgUploadDialog();
+      showSuccessMessage();
+    }
+  };
+
+  var onFormSubmit = function (evt) {
+    window.backend.upload(new FormData(window.form.imgUpload), submitMessage.onSuccess);
+    evt.preventDefault();
   };
 
   var closeImgUploadDialog = function () {
     imgUploadDialog.classList.add('hidden');
 
-    document.removeEventListener('keydown', onImgUploadDialogEscPress);
-    imgUploadCancelButton.removeEventListener('click', closeImgUploadDialog);
-    imgUploadHashtagsInput.removeEventListener('focus', onHashtagsInputFocus);
-    imgUploadHashtagsInput.removeEventListener('blur', onHashtagsInputBlur);
-    imgUploadDescriptionInput.removeEventListener('focus', onDescriptionInputFocus);
-    imgUploadDescriptionInput.removeEventListener('blur', onDescriptionInputBlur);
-    smallerScaleButton.removeEventListener('click', onSmallerScaleButtonClick);
-    biggerScaleButton.removeEventListener('click', onBiggerScaleButtonClick);
+    window.util.removeListeners(listeners);
     window.util.removeListeners(effectPreviews, 'change', onEffectClick);
+
+    hideEffectLevel();
     window.form.clearForm();
     window.effect.clearPhotoStyle();
+  };
+
+  var listeners = [
+    {
+      elem: document,
+      event: 'keydown',
+      callback: onImgUploadDialogEscPress
+    },
+    {
+      elem: imgUploadCancelButton,
+      event: 'click',
+      callback: closeImgUploadDialog
+    },
+    {
+      elem: imgUploadHashtagsInput,
+      event: 'focus',
+      callback: onHashtagsInputFocus
+    },
+    {
+      elem: imgUploadHashtagsInput,
+      event: 'blur',
+      callback: onHashtagsInputBlur
+    },
+    {
+      elem: imgUploadDescriptionInput,
+      event: 'focus',
+      callback: onDescriptionInputFocus
+    },
+    {
+      elem: imgUploadDescriptionInput,
+      event: 'blur',
+      callback: onDescriptionInputBlur
+    },
+    {
+      elem: smallerScaleButton,
+      event: 'click',
+      callback: onSmallerScaleButtonClick
+    },
+    {
+      elem: biggerScaleButton,
+      event: 'click',
+      callback: onBiggerScaleButtonClick
+    },
+    {
+      elem: window.form.imgUpload,
+      event: 'submit',
+      callback: onFormSubmit
+    }
+  ];
+
+  var openImgUploadDialog = function () {
+    imgUploadDialog.classList.remove('hidden');
+    effectLevel.classList.add('hidden');
+
+    window.util.addListeners(listeners);
+    window.util.addListeners(effectPreviews, 'change', onEffectClick);
   };
 
   imgUploadFile.addEventListener('change', function () {

@@ -10,6 +10,8 @@
 
   window.form = {
 
+    imgUpload: imgUploadForm,
+
     clearForm: function () {
       for (var i = 0; i < uploadFormInputs.length; i++) {
         if (uploadFormInputs[i].type === 'radio') {
