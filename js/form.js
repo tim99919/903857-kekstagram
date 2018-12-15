@@ -78,6 +78,9 @@
         rules.push('Хэштеги разделяются пробелами');
       }
       target.setCustomValidity(rules.join(', '));
+      if (target.value === '') {
+        target.setCustomValidity('');
+      }
     },
 
   };

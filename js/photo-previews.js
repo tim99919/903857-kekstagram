@@ -6,6 +6,13 @@
 
   var pictures = [];
 
+  var getData = function (data) {
+    window.photoCards = data;
+    showPhotoCards();
+  };
+
+  window.backend.download(getData);
+
   var renderPhotoCard = function (i) {
     var pictureElement = pictureTemplate.cloneNode(true);
     pictureElement.id = i;
@@ -16,7 +23,7 @@
     return pictureElement;
   };
 
-  (function showPhotoCards() {
+  var showPhotoCards = function () {
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < window.photoCards.length; i++) {
@@ -27,6 +34,6 @@
     pictures = picturesContainer.querySelectorAll('.picture');
 
     window.util.addListeners(pictures, 'click', window.onPictureClick);
-  })();
+  };
 
 })();

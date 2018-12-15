@@ -10,8 +10,11 @@
     step: 25
   };
 
+  var mainSection = document.querySelector('main');
   var imgUploadDialog = document.querySelector('.img-upload__overlay');
   var imgUploadFile = document.querySelector('#upload-file');
+  var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
+  var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
 
   var uploadedImgPreview = imgUploadDialog.querySelector('.img-upload__preview').firstElementChild;
   var imgUploadCancelButton = imgUploadDialog.querySelector('.cancel');
@@ -33,10 +36,6 @@
 
   var getCurrentScaleValue = function (input) {
     return parseInt(input.substr(0, input.length - 1), 10);
-  };
-
-  var showSuccessMessage = function (status) {
-
   };
 
   var onLevelPinDrag = function (evt) {
@@ -65,6 +64,7 @@
     uploadedImgPreview.className = 'effects__preview--' + effect;
     if (effect === 'none') {
       hideEffectLevel();
+      window.effect.clearPhotoStyle();
     } else {
       showEffectLevel();
     }
@@ -109,33 +109,110 @@
   };
 
   var submitMessage = {
-    onError: function () {
+
+    Error: {
+
+      onRepeatButtonClick: function () {
+        submitMessage.Error.hideMessage();
+        imgUploadDialog.classList.remove('hidden');
+      },
+
+      onAnotherFileButtonClick: function () {
+        submitMessage.Error.hideMessage();
+        closeImgUploadDialog();
+      },
+
+      onOutsideClick: function (evt) {
+        if (evt.target === mainSection.lastElementChild) {
+          submitMessage.Error.hideMessage();
+        }
+      },
+
+      onEscPress: function (evt) {
+        window.util.isEscEvent(evt, submitMessage.Error.hideMessage);
+      },
+
+      hideMessage: function () {
+        var repeatButton = mainSection.lastElementChild.querySelector('.error__buttons').firstElementChild;
+        var anotherFileButton = mainSection.lastElementChild.querySelector('.error__buttons').lastElementChild;
+        var removeElement = mainSection.lastElementChild;
+        repeatButton.removeEventListener('click', submitMessage.Error.onButtonClick);
+        anotherFileButton.removeEventListener('click', submitMessage.Error.onButtonClick);
+        mainSection.removeEventListener('click', submitMessage.Error.onOutsideClick);
+        document.removeEventListener('keydown', submitMessage.Error.onEscPress);
+        mainSection.removeChild(removeElement);
+      },
+
+      showMessage: function () {
+        var fragment = document.createDocumentFragment();
+        var errorMessage = errorMessageTemplate.cloneNode(true);
+        imgUploadDialog.classList.add('hidden');
+        fragment.appendChild(errorMessage);
+        mainSection.appendChild(fragment);
+        mainSection.lastElementChild.querySelector('.error__buttons').firstElementChild.addEventListener('click', submitMessage.Error.onRepeatButtonClick);
+        mainSection.lastElementChild.querySelector('.error__buttons').lastElementChild.addEventListener('click', submitMessage.Error.onAnotherFileButtonClick);
+        mainSection.addEventListener('click', submitMessage.Error.onOutsideClick);
+        document.addEventListener('keydown', submitMessage.Error.onEscPress);
+      },
 
     },
 
-    onSuccess: function () {
-      closeImgUploadDialog();
-      showSuccessMessage();
-    }
+    Success: {
+
+      onButtonClick: function () {
+        submitMessage.Success.hideMessage();
+      },
+
+      onOutsideClick: function (evt) {
+        if (evt.target === mainSection.lastElementChild) {
+          submitMessage.Success.hideMessage();
+        }
+      },
+
+      onEscPress: function (evt) {
+        window.util.isEscEvent(evt, submitMessage.Success.hideMessage);
+      },
+
+      hideMessage: function () {
+        var successButton = mainSection.lastElementChild.querySelector('.success__button');
+        var removeElement = mainSection.lastElementChild;
+        successButton.removeEventListener('click', submitMessage.Success.onButtonClick);
+        mainSection.removeEventListener('click', submitMessage.Success.onOutsideClick);
+        document.removeEventListener('keydown', submitMessage.Success.onEscPress);
+        mainSection.removeChild(removeElement);
+      },
+
+      showMessage: function () {
+        closeImgUploadDialog();
+        var fragment = document.createDocumentFragment();
+        var successMessage = successMessageTemplate.cloneNode(true);
+        fragment.appendChild(successMessage);
+        mainSection.appendChild(fragment);
+        mainSection.lastElementChild.querySelector('.success__button').addEventListener('click', submitMessage.Success.onButtonClick);
+        mainSection.addEventListener('click', submitMessage.Success.onOutsideClick);
+        document.addEventListener('keydown', submitMessage.Success.onEscPress);
+      },
+
+    },
+
   };
 
   var onFormSubmit = function (evt) {
-    window.backend.upload(new FormData(window.form.imgUpload), submitMessage.onSuccess);
+    window.backend.upload(new FormData(window.form.imgUpload), submitMessage.Success.showMessage, submitMessage.Error.showMessage);
     evt.preventDefault();
   };
 
   var closeImgUploadDialog = function () {
     imgUploadDialog.classList.add('hidden');
 
-    window.util.removeListeners(listeners);
+    window.util.removeListeners(elementsToListen);
     window.util.removeListeners(effectPreviews, 'change', onEffectClick);
 
-    hideEffectLevel();
     window.form.clearForm();
     window.effect.clearPhotoStyle();
   };
 
-  var listeners = [
+  var elementsToListen = [
     {
       elem: document,
       event: 'keydown',
@@ -187,11 +264,12 @@
     imgUploadDialog.classList.remove('hidden');
     effectLevel.classList.add('hidden');
 
-    window.util.addListeners(listeners);
+    window.util.addListeners(elementsToListen);
     window.util.addListeners(effectPreviews, 'change', onEffectClick);
   };
 
   imgUploadFile.addEventListener('change', function () {
     openImgUploadDialog();
   });
+
 })();
