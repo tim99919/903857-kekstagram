@@ -1,17 +1,63 @@
 'use strict';
 
 (function () {
+  var mainSection = document.querySelector('main');
   var picturesContainer = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
+  var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
 
   var pictures = [];
+
+  var onDownloadError = {
+
+    onRepeatButtonClick: function () {
+      onDownloadError.hideMessage();
+      downloadData();
+    },
+
+    onOutsideClick: function (evt) {
+      if (evt.target === mainSection.lastElementChild) {
+        onDownloadError.hideMessage();
+      }
+    },
+
+    onEscPress: function (evt) {
+      window.util.isEscEvent(evt, onDownloadError.hideMessage);
+    },
+
+    hideMessage: function () {
+      var repeatButton = mainSection.lastElementChild.querySelector('.error__button');
+      var removeElement = mainSection.lastElementChild;
+      repeatButton.removeEventListener('click', onDownloadError.onButtonClick);
+      mainSection.removeEventListener('click', onDownloadError.onOutsideClick);
+      document.removeEventListener('keydown', onDownloadError.onEscPress);
+      mainSection.removeChild(removeElement);
+    },
+
+    showMessage: function (errorMessage) {
+      var fragment = document.createDocumentFragment();
+      var errorPopup = errorMessageTemplate.cloneNode(true);
+      var buttonsElem = errorPopup.querySelector('.error__buttons');
+      buttonsElem.removeChild(buttonsElem.lastElementChild);
+      buttonsElem.firstElementChild.style.margin = '0';
+      errorPopup.querySelector('h2').textContent = errorMessage;
+      fragment.appendChild(errorPopup);
+      mainSection.appendChild(fragment);
+      mainSection.lastElementChild.querySelector('.error__button').addEventListener('click', onDownloadError.onRepeatButtonClick);
+      mainSection.addEventListener('click', onDownloadError.onOutsideClick);
+      document.addEventListener('keydown', onDownloadError.onEscPress);
+    },
+
+  };
 
   var getData = function (data) {
     window.photoCards = data;
     showPhotoCards();
   };
 
-  window.backend.download(getData);
+  var downloadData = function () {
+    window.backend.download(getData, onDownloadError.showMessage);
+  };
 
   var renderPhotoCard = function (i) {
     var pictureElement = pictureTemplate.cloneNode(true);
@@ -35,5 +81,7 @@
 
     window.util.addListeners(pictures, 'click', window.onPictureClick);
   };
+
+  downloadData();
 
 })();
