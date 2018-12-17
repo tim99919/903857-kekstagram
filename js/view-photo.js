@@ -71,7 +71,7 @@
 
   window.onPictureClick = function (evt) {
     var target = evt.currentTarget;
-    showBigPicDiaolog(window.photoCards[target.id]);
+    showBigPicDiaolog(window.photoPreviews.getPhotoCards()[target.id]);
   };
 
 })();
