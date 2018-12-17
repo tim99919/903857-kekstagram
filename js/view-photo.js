@@ -9,17 +9,21 @@
 
   var renderComment = function (picture, i) {
     var newComment = socialComments.querySelector('.social__comment').cloneNode(true);
-    var userAvatar = 'img/avatar-' + window.util.getRandInt(1, 6) + '.svg';
-    newComment.querySelector('img').src = userAvatar;
-    newComment.querySelector('p').textContent = picture.comments[i];
+    var userAvatar = newComment.querySelector('img');
+
+    userAvatar.src = picture.comments[i].avatar;
+    userAvatar.alt = picture.comments[i].name;
+
+    newComment.querySelector('p').textContent = picture.comments[i].message;
 
     return newComment;
   };
 
   var showComments = function (picture) {
     var fragment = document.createDocumentFragment();
+    var commentsAmount = picture.comments.length <= 5 ? picture.comments.length : 5;
 
-    for (var i = 0; i < picture.comments.length; i++) {
+    for (var i = 0; i < commentsAmount; i++) {
       fragment.appendChild(renderComment(picture, i));
     }
 

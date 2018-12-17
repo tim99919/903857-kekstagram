@@ -16,7 +16,7 @@
     return pictureElement;
   };
 
-  (function showPhotoCards() {
+  var showPhotoCards = function () {
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < window.photoCards.length; i++) {
@@ -27,6 +27,17 @@
     pictures = picturesContainer.querySelectorAll('.picture');
 
     window.util.addListeners(pictures, 'click', window.onPictureClick);
-  })();
+  };
+
+  var getData = function (data) {
+    window.photoCards = data;
+    showPhotoCards();
+  };
+
+  window.downloadData = function () {
+    window.backend.download(getData, window.message.downloadError);
+  };
+
+  window.downloadData();
 
 })();
