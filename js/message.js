@@ -10,95 +10,199 @@
     return mainSection.lastElementChild;
   };
 
-  var onMessagePopupOutsideClick = function (evt) {
-    if (evt.target === mainSection.lastElementChild) {
-      hideMessage();
+  var hideMessage = function () {
+    mainSection.removeChild(getMessagePopupElem());
+  };
+
+  var showMessage = function (template, callback, download, errorMessage) {
+    var fragment = document.createDocumentFragment();
+    var message = template.cloneNode(true);
+    fragment.appendChild(message);
+    if (download) {
+      var buttonsElem = message.querySelector('.error__buttons');
+      buttonsElem.removeChild(buttonsElem.lastElementChild);
+      buttonsElem.firstElementChild.style.margin = '0';
+      message.querySelector('h2').textContent = errorMessage;
+    }
+    mainSection.appendChild(fragment);
+    if (!download) {
+      callback();
     }
   };
 
-  var onMessagePopupEscPress = function (evt) {
-    window.util.isEscEvent(evt, hideMessage);
+  var getMainElementsToListen = function (popup) {
+    return [
+      {
+        elem: mainSection,
+        event: 'click',
+        callback: popup.onOtsideClick
+      },
+      {
+        elem: document,
+        event: 'keydown',
+        callback: popup.onEscPress
+      },
+    ];
   };
 
   var uploadErrorPopup = {
 
+    getRepeatButtonElem: function () {
+      var repeatButton = getMessagePopupElem().querySelector('.error__buttons').firstElementChild;
+      return repeatButton;
+    },
+
+    getAnotherFileButtonElem: function () {
+      var anotherFileButton = getMessagePopupElem().querySelector('.error__buttons').lastElementChild;
+      return anotherFileButton;
+    },
+
+    getElementsToListen: function () {
+      return [
+        {
+          elem: uploadErrorPopup.getRepeatButtonElem(),
+          event: 'click',
+          callback: uploadErrorPopup.onRepeatButtonClick
+        },
+        {
+          elem: uploadErrorPopup.getAnotherFileButtonElem(),
+          event: 'click',
+          callback: uploadErrorPopup.onAnotherFileButtonClick
+        }
+      ];
+    },
+
     onRepeatButtonClick: function () {
-      hideMessage(uploadErrorPopup.removeListeners);
+      window.util.removeListeners(uploadErrorPopup.getElementsToListen());
+      window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+      hideMessage();
       window.uploadDialog.show();
     },
 
     onAnotherFileButtonClick: function () {
-      hideMessage(uploadErrorPopup.removeListeners);
+      window.util.removeListeners(uploadErrorPopup.getElementsToListen());
+      window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+      hideMessage();
       window.uploadDialog.close();
     },
 
-    addListeners: function () {
-      var repeatButton = getMessagePopupElem().querySelector('.error__buttons').firstElementChild;
-      var anotherFileButton = getMessagePopupElem().querySelector('.error__buttons').lastElementChild;
-      repeatButton.addEventListener('click', uploadErrorPopup.onRepeatButtonClick);
-      anotherFileButton.addEventListener('click', uploadErrorPopup.onAnotherFileButtonClick);
-      mainSection.addEventListener('click', onMessagePopupOutsideClick);
-      document.addEventListener('keydown', onMessagePopupEscPress);
+    onEscPress: function (evt) {
+      window.util.removeListeners(uploadErrorPopup.getElementsToListen());
+      window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+      window.util.isEscEvent(evt, hideMessage);
+      window.uploadDialog.close();
     },
 
-    removeListeners: function () {
-      var repeatButton = getMessagePopupElem().querySelector('.error__buttons').firstElementChild;
-      var anotherFileButton = getMessagePopupElem().querySelector('.error__buttons').lastElementChild;
-      repeatButton.removeEventListener('click', uploadErrorPopup.onRepeatButtonClick);
-      anotherFileButton.removeEventListener('click', uploadErrorPopup.onAnotherFileButtonClick);
-      mainSection.removeEventListener('click', onMessagePopupOutsideClick);
-      document.removeEventListener('keydown', onMessagePopupEscPress);
-    }
+    onOtsideClick: function (evt) {
+      if (evt.target === mainSection.lastElementChild) {
+        window.util.removeListeners(uploadErrorPopup.getElementsToListen());
+        window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+        hideMessage();
+        window.uploadDialog.close();
+      }
+    },
 
   };
 
   var uploadSuccessPopup = {
 
+    getButtonElem: function () {
+      var button = getMessagePopupElem().querySelector('.success__button');
+      return button;
+    },
+
+    getElementsToListen: function () {
+      return [
+        {
+          elem: uploadSuccessPopup.getButtonElem(),
+          event: 'click',
+          callback: uploadSuccessPopup.onButtonClick
+        }
+      ];
+    },
+
+    onEscPress: function (evt) {
+      window.util.removeListeners(uploadSuccessPopup.getElementsToListen());
+      window.util.removeListeners(getMainElementsToListen(uploadSuccessPopup));
+      window.util.isEscEvent(evt, hideMessage);
+
+    },
+
+    onOtsideClick: function (evt) {
+      if (evt.target === mainSection.lastElementChild) {
+        window.util.removeListeners(uploadSuccessPopup.getElementsToListen());
+        window.util.removeListeners(getMainElementsToListen(uploadSuccessPopup));
+        hideMessage();
+      }
+    },
+
     onButtonClick: function () {
-      hideMessage(uploadSuccessPopup.removeListeners);
-    },
-
-    addListeners: function () {
-      var button = getMessagePopupElem().querySelector('.success__button');
-      button.addEventListener('click', uploadSuccessPopup.onButtonClick);
-      mainSection.addEventListener('click', onMessagePopupOutsideClick);
-      document.addEventListener('keydown', onMessagePopupEscPress);
-    },
-
-    removeListeners: function () {
-      var button = getMessagePopupElem().querySelector('.success__button');
-      button.removeEventListener('click', uploadSuccessPopup.onButtonClick);
-      mainSection.removeEventListener('click', onMessagePopupOutsideClick);
-      document.removeEventListener('keydown', onMessagePopupEscPress);
+      window.util.removeListeners(uploadSuccessPopup.getElementsToListen());
+      window.util.removeListeners(getMainElementsToListen(uploadSuccessPopup));
+      hideMessage();
     },
 
   };
 
-  var hideMessage = function (removeListeners) {
-    removeListeners();
-    mainSection.removeChild(getMessagePopupElem());
-  };
+  var downloadErrorPopup = {
 
-  var showMessage = function (template, addListeners, callback) {
-    var fragment = document.createDocumentFragment();
-    var message = template.cloneNode(true);
-    fragment.appendChild(message);
-    mainSection.appendChild(fragment);
-    addListeners();
-    callback();
+    getButtonElem: function () {
+      var repeatButton = getMessagePopupElem().querySelector('.error__buttons').firstElementChild;
+      return repeatButton;
+    },
+
+    getElementsToListen: function () {
+      return [
+        {
+          elem: downloadErrorPopup.getButtonElem(),
+          event: 'click',
+          callback: downloadErrorPopup.onButtonClick
+        }
+      ];
+    },
+
+    onButtonClick: function () {
+      window.util.removeListeners(downloadErrorPopup.getElementsToListen());
+      window.util.removeListeners(getMainElementsToListen(downloadErrorPopup));
+      hideMessage();
+      window.downloadData();
+    },
+
+    onEscPress: function (evt) {
+      window.util.removeListeners(uploadErrorPopup.getElementsToListen());
+      window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+      window.util.isEscEvent(evt, hideMessage);
+    },
+
+    onOtsideClick: function (evt) {
+      if (evt.target === mainSection.lastElementChild) {
+        window.util.removeListeners(uploadErrorPopup.getElementsToListen());
+        window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+        hideMessage();
+      }
+    },
+
   };
 
   window.message = {
 
     uploadError: function () {
-      showMessage(errorMessageTemplate, uploadErrorPopup.addListeners, window.uploadDialog.hide);
+      showMessage(errorMessageTemplate, window.uploadDialog.hide);
+      window.util.addListeners(uploadErrorPopup.getElementsToListen());
+      window.util.addListeners(getMainElementsToListen(uploadErrorPopup));
     },
 
     uploadSuccess: function () {
-      showMessage(successMessageTemplate, uploadSuccessPopup.addListeners, window.uploadDialog.close);
+      showMessage(successMessageTemplate, window.uploadDialog.close);
+      window.util.addListeners(uploadSuccessPopup.getElementsToListen());
+      window.util.addListeners(getMainElementsToListen(uploadSuccessPopup));
     },
 
-    downloadError: ''
+    downloadError: function (errorMessage) {
+      showMessage(errorMessageTemplate, undefined, true, errorMessage);
+      window.util.addListeners(downloadErrorPopup.getElementsToListen());
+      window.util.addListeners(getMainElementsToListen(downloadErrorPopup));
+    }
 
   };
 

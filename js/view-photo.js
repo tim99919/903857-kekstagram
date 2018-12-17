@@ -21,8 +21,9 @@
 
   var showComments = function (picture) {
     var fragment = document.createDocumentFragment();
+    var commentsAmount = picture.comments.length <= 5 ? picture.comments.length : 5;
 
-    for (var i = 0; i < picture.comments.length; i++) {
+    for (var i = 0; i < commentsAmount; i++) {
       if (i === 5) {
         break;
       }
