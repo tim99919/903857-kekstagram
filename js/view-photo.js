@@ -24,9 +24,6 @@
     var commentsAmount = picture.comments.length <= 5 ? picture.comments.length : 5;
 
     for (var i = 0; i < commentsAmount; i++) {
-      if (i === 5) {
-        break;
-      }
       fragment.appendChild(renderComment(picture, i));
     }
 
