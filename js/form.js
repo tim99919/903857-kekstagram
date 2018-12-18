@@ -78,11 +78,15 @@
         rules.push('Хэштеги разделяются пробелами');
       }
       target.setCustomValidity(rules.join(', '));
+      if (rules.length > 0) {
+        target.style.borderColor = 'red';
+      } else {
+        target.removeAttribute('style');
+      }
       if (target.value === '') {
         target.setCustomValidity('');
       }
     },
-
   };
 
 })();
