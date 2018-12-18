@@ -3,6 +3,7 @@
 (function () {
 
   var NEW_PHOTO_COUNT = 10;
+  var DEBOUNCE_INTERVAL = 500; // ms
 
   var imgFiltersElem = document.querySelector('.img-filters');
   var popularButton = imgFiltersElem.querySelector('#filter-popular');
@@ -84,21 +85,23 @@
 
   };
 
-  var showPopularPhotos = function () {
+  var showPopularPhotos = window.debounce(function () {
     window.photoPreviews.showPhotoCards(window.photoPreviews.getPhotoCards());
-  };
+  }, DEBOUNCE_INTERVAL);
 
-  var showNewPhotos = function () {
+  var showNewPhotos = window.debounce(function () {
     var photoCards = window.photoPreviews.getPhotoCards();
     var newPhotoCards = getNewPhotos(photoCards);
     window.photoPreviews.showPhotoCards(newPhotoCards.photos, newPhotoCards.IDs);
-  };
+  }, DEBOUNCE_INTERVAL);
 
   var showDiscussedPhotos = function () {
     var photoCards = window.photoPreviews.getPhotoCards();
     var discussedPhotos = getDiscussedPhotos(photoCards);
     window.photoPreviews.showPhotoCards(discussedPhotos.photos, discussedPhotos.IDs);
   };
+
+  // сделать общую функцию для обработки клика, и таргетом определеить кнопку по которой проихошел клик.
 
   var onPopularButtonClick = function (evt) {
     resetActiveButton();
