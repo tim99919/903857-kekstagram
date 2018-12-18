@@ -5,24 +5,21 @@
   var NEW_PHOTO_COUNT = 10;
   var DEBOUNCE_INTERVAL = 500; // ms
 
+  var picturesContainer = document.querySelector('.pictures');
   var imgFiltersElem = document.querySelector('.img-filters');
-  var popularButton = imgFiltersElem.querySelector('#filter-popular');
-  var newButton = imgFiltersElem.querySelector('#filter-new');
-  var discussedButton = imgFiltersElem.querySelector('#filter-discussed');
+  var filterButtons = imgFiltersElem.querySelector('.img-filters__form');
 
   var buttons = imgFiltersElem.querySelectorAll('.img-filters__button');
 
-  var picturesContainer = document.querySelector('.pictures');
 
   var resetActiveButton = function () {
     buttons.forEach(function (button) {
-      button.className = 'img-filters__button';
+      button.classList.remove('img-filters__button--active');
     });
   };
 
   var setActiveButton = function (evt) {
-    var target = evt.target;
-    target.classList.add('img-filters__button--active');
+    evt.target.classList.add('img-filters__button--active');
   };
 
   var clearPicturesContainer = function () {
@@ -85,48 +82,32 @@
 
   };
 
-  var showPopularPhotos = window.debounce(function () {
-    window.photoPreviews.showPhotoCards(window.photoPreviews.getPhotoCards());
+  var buttonToAction = {
+    'popular': function () {
+      var photoCards = window.photoPreviews.getPhotoCards();
+      window.photoPreviews.showPhotoCards(photoCards);
+    },
+    'new': function () {
+      var photoCards = getNewPhotos(window.photoPreviews.getPhotoCards());
+      window.photoPreviews.showPhotoCards(photoCards.photos, photoCards.IDs);
+    },
+    'discussed': function () {
+      var photoCards = getDiscussedPhotos(window.photoPreviews.getPhotoCards());
+      window.photoPreviews.showPhotoCards(photoCards.photos, photoCards.IDs);
+    },
+  };
+
+  var debouncedOnFilterButtonClick = window.debounce(function (evt) {
+    clearPicturesContainer();
+    buttonToAction[evt.target.id.substr(7)]();
   }, DEBOUNCE_INTERVAL);
 
-  var showNewPhotos = window.debounce(function () {
-    var photoCards = window.photoPreviews.getPhotoCards();
-    var newPhotoCards = getNewPhotos(photoCards);
-    window.photoPreviews.showPhotoCards(newPhotoCards.photos, newPhotoCards.IDs);
-  }, DEBOUNCE_INTERVAL);
-
-  var showDiscussedPhotos = function () {
-    var photoCards = window.photoPreviews.getPhotoCards();
-    var discussedPhotos = getDiscussedPhotos(photoCards);
-    window.photoPreviews.showPhotoCards(discussedPhotos.photos, discussedPhotos.IDs);
-  };
-
-  // сделать общую функцию для обработки клика, и таргетом определеить кнопку по которой проихошел клик.
-
-  var onPopularButtonClick = function (evt) {
+  var onFilterButtonClick = function (evt) {
     resetActiveButton();
     setActiveButton(evt);
-    clearPicturesContainer();
-    showPopularPhotos();
+    debouncedOnFilterButtonClick(evt);
   };
 
-  var onNewButtonClick = function (evt) {
-    resetActiveButton();
-    setActiveButton(evt);
-    clearPicturesContainer();
-    showNewPhotos();
-
-  };
-
-  var onDiscussedButtonClick = function (evt) {
-    resetActiveButton();
-    setActiveButton(evt);
-    clearPicturesContainer();
-    showDiscussedPhotos();
-  };
-
-  popularButton.addEventListener('click', onPopularButtonClick);
-  newButton.addEventListener('click', onNewButtonClick);
-  discussedButton.addEventListener('click', onDiscussedButtonClick);
+  filterButtons.addEventListener('click', onFilterButtonClick);
 
 })();
