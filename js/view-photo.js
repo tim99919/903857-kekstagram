@@ -9,7 +9,7 @@
   var showedCommentsCount = bigPictureDiaolog.querySelector('.showed-comments-count');
   var commentsLoaderButton = bigPictureDiaolog.querySelector('.comments-loader');
 
-  var comments = [];
+  var commentsHtml = [];
 
   var renderComment = function (comment) {
     var newComment = socialComments.querySelector('.social__comment').cloneNode(true);
@@ -23,7 +23,7 @@
     return newComment;
   };
 
-  var getCommentsArr = function (commentArr) {
+  var getCommentsHtml = function (commentArr) {
 
     var commentElems = commentArr.
       map(function (it) {
@@ -35,16 +35,16 @@
     return commentElems;
   };
 
-  var showComments = function (commentElems) {
+  var showComments = function () {
 
-    // var commentsAmount = 5;
     var fragment = document.createDocumentFragment();
+    var commentsAmount = commentsHtml.length <= 5 ? commentsHtml.length : 5;
 
-    commentElems.forEach(function (it) {
+    commentsHtml.splice(0, commentsAmount).forEach(function (it) {
       fragment.appendChild(it);
     });
+    showCommentsLoader();
 
-    // console.log(fragment);
     socialComments.appendChild(fragment);
     showedCommentsCount.textContent = socialComments.querySelectorAll('.social__comment').length;
   };
@@ -63,18 +63,30 @@
   };
 
   var onCommentsLoaderButtonClick = function () {
-    if (comments.length > 0) {
-      var commentsAmount = comments.length <= 5 ? comments.length : 5;
-      showComments(comments.splice(0, commentsAmount));
+    if (commentsHtml.length > 0) {
+      showComments();
+      hideCommentsLoader();
+    }
+  };
+
+  var hideCommentsLoader = function () {
+    if (commentsHtml.length <= 0) {
+      commentsLoaderButton.classList.add('hidden');
+    }
+  };
+
+  var showCommentsLoader = function () {
+    if (commentsHtml.length > 0) {
+      commentsLoaderButton.classList.remove('hidden');
     }
   };
 
   var showBigPicDiaolog = function (pictureID) {
     var photoCard = window.photoPreviews.getPhotoCards()[pictureID];
-    comments = getCommentsArr(photoCard.comments);
-    var commentsAmount = comments.length <= 5 ? comments.length : 5;
+    commentsHtml = getCommentsHtml(photoCard.comments);
+
     showPictureStatistic(photoCard);
-    showComments(comments.splice(0, commentsAmount));
+    showComments();
     showPictureDescription(photoCard);
 
     documentBody.classList.add('modal-open');
