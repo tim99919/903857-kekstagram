@@ -165,7 +165,7 @@
       window.util.removeListeners(downloadErrorPopup.getElementsToListen());
       window.util.removeListeners(getMainElementsToListen(downloadErrorPopup));
       hideMessage();
-      window.downloadData();
+      window.photoPreviews.downloadData();
     },
 
     onEscPress: function (evt) {

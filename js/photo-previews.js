@@ -3,41 +3,60 @@
 (function () {
   var picturesContainer = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
+  var pictureFiltersElem = document.querySelector('.img-filters');
 
   var pictures = [];
+  var photoCards;
 
-  var renderPhotoCard = function (i) {
+  var renderPhotoCard = function (photos, i, IDs) {
     var pictureElement = pictureTemplate.cloneNode(true);
-    pictureElement.id = i;
-    pictureElement.querySelector('img').src = window.photoCards[i].url;
-    pictureElement.querySelector('.picture__likes').textContent = window.photoCards[i].likes;
-    pictureElement.querySelector('.picture__comments').textContent = window.photoCards[i].comments.length;
+    if (IDs) {
+      pictureElement.id = IDs[i];
+    } else {
+      pictureElement.id = i;
+    }
+    pictureElement.querySelector('img').src = photos[i].url;
+    pictureElement.querySelector('.picture__likes').textContent = photos[i].likes;
+    pictureElement.querySelector('.picture__comments').textContent = photos[i].comments.length;
 
     return pictureElement;
   };
 
-  var showPhotoCards = function () {
-    var fragment = document.createDocumentFragment();
-
-    for (var i = 0; i < window.photoCards.length; i++) {
-      fragment.appendChild(renderPhotoCard(i));
-    }
-
-    picturesContainer.appendChild(fragment);
-    pictures = picturesContainer.querySelectorAll('.picture');
-
-    window.util.addListeners(pictures, 'click', window.onPictureClick);
+  var showPictureFilters = function () {
+    pictureFiltersElem.classList.remove('img-filters--inactive');
   };
 
-  var getData = function (data) {
-    window.photoCards = data;
-    showPhotoCards();
+  var onSuccessDownload = function (data) {
+    photoCards = data;
+    window.photoPreviews.showPhotoCards(data);
+    showPictureFilters();
   };
 
-  window.downloadData = function () {
-    window.backend.download(getData, window.message.downloadError);
+  window.photoPreviews = {
+
+    getPhotoCards: function () {
+      return photoCards;
+    },
+
+    showPhotoCards: function (photos, IDs) {
+      var fragment = document.createDocumentFragment();
+
+      for (var i = 0; i < photos.length; i++) {
+        fragment.appendChild(renderPhotoCard(photos, i, IDs));
+      }
+
+      picturesContainer.appendChild(fragment);
+      pictures = picturesContainer.querySelectorAll('.picture');
+
+      window.util.addListeners(pictures, 'click', window.onPictureClick);
+    },
+
+    downloadData: function () {
+      window.backend.download(onSuccessDownload, window.message.downloadError);
+    },
+
   };
 
-  window.downloadData();
+  window.photoPreviews.downloadData();
 
 })();
