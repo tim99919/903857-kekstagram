@@ -39,7 +39,7 @@
       var hashtag;
       var isSharp = true;
       var wrongLength = false;
-      var isReapeat = false;
+      var isUnique = true;
 
       for (var i = 0; i < hashtags.length; i++) {
         hashtag = hashtags[i];
@@ -55,7 +55,7 @@
           for (var j = i + 1; j < hashtags.length; j++) {
             var anotherHashtag = hashtags[j];
             if (hashtag.toLowerCase() === anotherHashtag.toLowerCase()) {
-              isReapeat = true;
+              isUnique = false;
               break;
             }
           }
@@ -71,7 +71,7 @@
       if (hashtags.length > 5) {
         rules.push('Возможно указать не более 5-ти хэштэгов');
       }
-      if (isReapeat) {
+      if (!isUnique) {
         rules.push('Хэштеги не должны повторяться');
       }
       if (/\S#/.test(hashtagsStr)) {
