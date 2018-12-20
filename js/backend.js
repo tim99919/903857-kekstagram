@@ -9,12 +9,18 @@
     getData: 'https://js.dump.academy/kekstagram/data'
   };
 
+  var unknownError = 'Неизвестная ошибка';
+
   var statusToMessage = {
     '400': 'Неверный запрос',
     '401': 'Пользователь не авторизован',
     '404': 'Ничего не найдено',
     '408': 'Истекло время ожидания',
     '500': 'Ошибка на сервере'
+  };
+
+  var getErrorText = function (code) {
+    return statusToMessage[code] || unknownError;
   };
 
   var getXHR = function (onLoad, onError) {
@@ -25,7 +31,7 @@
       if (xhr.status === STATUS_OK) {
         onLoad(xhr.response);
       } else {
-        onError(statusToMessage[xhr.status]);
+        onError(getErrorText(xhr.status));
       }
     });
 
