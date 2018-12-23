@@ -3,7 +3,7 @@
 (function () {
 
   var NEW_PHOTO_COUNT = 10;
-  var DEBOUNCE_INTERVAL = 500; // ms
+  var DEBOUNCE_INTERVAL = 500;
 
   var picturesContainer = document.querySelector('.pictures');
   var imgFiltersElem = document.querySelector('.img-filters');

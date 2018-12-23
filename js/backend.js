@@ -3,6 +3,7 @@
 (function () {
 
   var STATUS_OK = 200;
+  var TIMEOUT_VALUE = 10000;
 
   var URLs = {
     formSubmit: 'https://js.dump.academy/kekstagram',
@@ -43,7 +44,7 @@
       onError('Истекло время ожидания');
     });
 
-    xhr.timeout = 10000;
+    xhr.timeout = TIMEOUT_VALUE;
     return xhr;
   };
 

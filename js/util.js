@@ -20,6 +20,10 @@
       return arr[window.util.getRandInt(0, arr.length - 1)];
     },
 
+    transferPercentToRange: function (value, min, max) {
+      return ((max - min) * value / 100) + min;
+    },
+
     addListeners: function (arr, event, callback) {
       for (var i = 0; i < arr.length; i++) {
         if (event) {

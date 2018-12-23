@@ -18,13 +18,16 @@
     var fragment = document.createDocumentFragment();
     var message = template.cloneNode(true);
     fragment.appendChild(message);
+
     if (download) {
       var buttonsElem = message.querySelector('.error__buttons');
       buttonsElem.removeChild(buttonsElem.lastElementChild);
       buttonsElem.firstElementChild.style.margin = '0';
       message.querySelector('h2').textContent = errorMessage;
     }
+
     mainSection.appendChild(fragment);
+
     if (!download) {
       callback();
     }

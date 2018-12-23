@@ -2,23 +2,30 @@
 
 (function () {
 
+  var EFFECT_NAME_START_INDEX = 18;
+
   var uploadedPhoto = document.querySelector('.img-upload__preview').firstElementChild;
+
+
+  var getEffectName = function () {
+    return uploadedPhoto.className.substr(EFFECT_NAME_START_INDEX);
+  };
 
   var effectToFilter = {
     chrome: function (value) {
-      return 'grayscale(' + value / 100 + ')';
+      return 'grayscale(' + window.util.transferPercentToRange(value, 0, 1) + ')';
     },
     sepia: function (value) {
-      return 'sepia(' + value / 100 + ')';
+      return 'sepia(' + window.util.transferPercentToRange(value, 0, 1) + ')';
     },
     marvin: function (value) {
       return 'invert(' + value + '%)';
     },
     phobos: function (value) {
-      return 'blur(' + (value / 100 * 2 + 1) + 'px)';
+      return 'blur(' + window.util.transferPercentToRange(value, 1, 3) + 'px)';
     },
     heat: function (value) {
-      return 'brightness(' + value / 100 * 3 + ')';
+      return 'brightness(' + window.util.transferPercentToRange(value, 0, 3) + ')';
     }
   };
 
@@ -30,7 +37,7 @@
     },
 
     setPhotoStyle: function (value) {
-      var appliedEffect = uploadedPhoto.className.substr(18);
+      var appliedEffect = getEffectName();
 
       uploadedPhoto.style.filter = effectToFilter[appliedEffect](value);
       uploadedPhoto.style.webkitFilter = uploadedPhoto.style.filter;
