@@ -2,6 +2,8 @@
 
 (function () {
 
+  var START_COMMENTS_COUNT = 5;
+
   var documentBody = document.body;
   var bigPictureDiaolog = document.querySelector('.big-picture');
   var bigPictureDiaologCancelButton = bigPictureDiaolog.querySelector('#picture-cancel');
@@ -38,7 +40,7 @@
   var showComments = function () {
 
     var fragment = document.createDocumentFragment();
-    var commentsAmount = commentsHtml.length <= 5 ? commentsHtml.length : 5;
+    var commentsAmount = commentsHtml.length <= START_COMMENTS_COUNT ? commentsHtml.length : START_COMMENTS_COUNT;
 
     commentsHtml.splice(0, commentsAmount).forEach(function (it) {
       fragment.appendChild(it);
@@ -60,6 +62,10 @@
 
   var onBigPicDialogEscPress = function (evt) {
     window.util.isEscEvent(evt, closeBigPicDialog);
+  };
+
+  var onBigPicDialogCancelButtonClick = function () {
+    closeBigPicDialog();
   };
 
   var onCommentsLoaderButtonClick = function () {
@@ -93,7 +99,7 @@
     bigPictureDiaolog.classList.remove('hidden');
     bigPictureDiaolog.querySelector('.big-picture__img').children[0].src = photoCard.url;
 
-    bigPictureDiaologCancelButton.addEventListener('click', closeBigPicDialog);
+    bigPictureDiaologCancelButton.addEventListener('click', onBigPicDialogCancelButtonClick);
     document.addEventListener('keydown', onBigPicDialogEscPress);
     commentsLoaderButton.addEventListener('click', onCommentsLoaderButtonClick);
   };
@@ -101,7 +107,7 @@
   var closeBigPicDialog = function () {
     documentBody.classList.remove('modal-open');
     bigPictureDiaolog.classList.add('hidden');
-    bigPictureDiaologCancelButton.removeEventListener('click', closeBigPicDialog);
+    bigPictureDiaologCancelButton.removeEventListener('click', onBigPicDialogCancelButtonClick);
     document.removeEventListener('keydown', onBigPicDialogEscPress);
     commentsLoaderButton.removeEventListener('click', onCommentsLoaderButtonClick);
   };
