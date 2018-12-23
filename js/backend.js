@@ -24,8 +24,12 @@
     return statusToMessage[code] || unknownError;
   };
 
-  var getXHR = function (onLoad, onError) {
+  var sendRequest = function (data, onLoad, onError) {
+    var method = data ? 'POST' : 'GET';
+    var url = data ? URLs.formSubmit : URLs.getData;
+
     var xhr = new XMLHttpRequest();
+
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
@@ -45,21 +49,19 @@
     });
 
     xhr.timeout = TIMEOUT_VALUE;
-    return xhr;
+
+    xhr.open(method, url);
+    xhr.send(data);
   };
 
   window.backend = {
 
     upload: function (data, onLoad, onError) {
-      var xhr = getXHR(onLoad, onError);
-      xhr.open('POST', URLs.formSubmit);
-      xhr.send(data);
+      sendRequest(data, onLoad, onError);
     },
 
     download: function (onLoad, onError) {
-      var xhr = getXHR(onLoad, onError);
-      xhr.open('GET', URLs.getData);
-      xhr.send();
+      sendRequest(null, onLoad, onError);
     }
 
   };

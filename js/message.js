@@ -75,31 +75,32 @@
       ];
     },
 
-    onRepeatButtonClick: function () {
+    removeListeners: function () {
       window.util.removeListeners(uploadErrorPopup.getElementsToListen());
       window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+    },
+
+    onRepeatButtonClick: function () {
+      uploadErrorPopup.removeListeners();
       hideMessage();
       window.uploadDialog.show();
     },
 
     onAnotherFileButtonClick: function () {
-      window.util.removeListeners(uploadErrorPopup.getElementsToListen());
-      window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+      uploadErrorPopup.removeListeners();
       hideMessage();
       window.uploadDialog.close();
     },
 
     onEscPress: function (evt) {
-      window.util.removeListeners(uploadErrorPopup.getElementsToListen());
-      window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+      uploadErrorPopup.removeListeners();
       window.util.isEscEvent(evt, hideMessage);
       window.uploadDialog.close();
     },
 
     onOtsideClick: function (evt) {
       if (evt.target === mainSection.lastElementChild) {
-        window.util.removeListeners(uploadErrorPopup.getElementsToListen());
-        window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+        uploadErrorPopup.removeListeners();
         hideMessage();
         window.uploadDialog.close();
       }
@@ -124,24 +125,26 @@
       ];
     },
 
-    onEscPress: function (evt) {
+    removeListeners: function () {
       window.util.removeListeners(uploadSuccessPopup.getElementsToListen());
       window.util.removeListeners(getMainElementsToListen(uploadSuccessPopup));
+    },
+
+    onEscPress: function (evt) {
+      uploadSuccessPopup.removeListeners();
       window.util.isEscEvent(evt, hideMessage);
 
     },
 
     onOtsideClick: function (evt) {
       if (evt.target === mainSection.lastElementChild) {
-        window.util.removeListeners(uploadSuccessPopup.getElementsToListen());
-        window.util.removeListeners(getMainElementsToListen(uploadSuccessPopup));
+        uploadSuccessPopup.removeListeners();
         hideMessage();
       }
     },
 
     onButtonClick: function () {
-      window.util.removeListeners(uploadSuccessPopup.getElementsToListen());
-      window.util.removeListeners(getMainElementsToListen(uploadSuccessPopup));
+      uploadSuccessPopup.removeListeners();
       hideMessage();
     },
 
@@ -164,23 +167,25 @@
       ];
     },
 
-    onButtonClick: function () {
+    removeListeners: function () {
       window.util.removeListeners(downloadErrorPopup.getElementsToListen());
       window.util.removeListeners(getMainElementsToListen(downloadErrorPopup));
+    },
+
+    onButtonClick: function () {
+      downloadErrorPopup.removeListeners();
       hideMessage();
       window.photoPreviews.downloadData();
     },
 
     onEscPress: function (evt) {
-      window.util.removeListeners(uploadErrorPopup.getElementsToListen());
-      window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+      downloadErrorPopup.removeListeners();
       window.util.isEscEvent(evt, hideMessage);
     },
 
     onOtsideClick: function (evt) {
       if (evt.target === mainSection.lastElementChild) {
-        window.util.removeListeners(uploadErrorPopup.getElementsToListen());
-        window.util.removeListeners(getMainElementsToListen(uploadErrorPopup));
+        downloadErrorPopup.removeListeners();
         hideMessage();
       }
     },
